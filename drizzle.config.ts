@@ -1,23 +1,26 @@
 import { defineConfig } from "drizzle-kit";
 import { Pool } from "pg";
 
-// Создаем кастомный Pool с SSL
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL + "?sslmode=require",
-  ssl: { rejectUnauthorized: false }
-});
+// Проверка переменной окружения
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is missing");
+}
 
 export default defineConfig({
-  out: "./migrations",
   schema: "./shared/schema.ts",
-  dialect: "postgresql",
+  out: "./migrations",
+  dialect: "postgresql", // Явно указываем диалект
+  
+  // Стандартная конфигурация для PostgreSQL
   dbCredentials: {
-    url: process.env.DATABASE_URL + "?sslmode=require",
-    ssl: true  // Явно включаем SSL
+    connectionString: process.env.DATABASE_URL + "?sslmode=require",
   },
-  // Переопределяем драйвер для использования кастомного Pool
-  driver: "custom",
-  custom: {
-    connection: async () => await pool.connect()  // Используем Pool с SSL
-  }
+  
+  // Указываем стандартный драйвер для PostgreSQL
+  driver: "pg", // Важно: используйте "pg", а не "custom"
+  
+  // Для SSL (только если нужно отключить проверку сертификата)
+  ssl: process.env.NODE_ENV === "production" 
+    ? { rejectUnauthorized: false }
+    : false
 });
