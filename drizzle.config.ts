@@ -1,26 +1,14 @@
 import { defineConfig } from "drizzle-kit";
-import { Pool } from "pg";
 
-// Проверка переменной окружения
 if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL is missing");
+  throw new Error("DATABASE_URL, ensure the database is provisioned");
 }
 
 export default defineConfig({
-  schema: "./shared/schema.ts",
   out: "./migrations",
-  dialect: "postgresql", // Явно указываем диалект
-  
-  // Стандартная конфигурация для PostgreSQL
+  schema: "./shared/schema.ts",
+  dialect: "postgresql",
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL + "?sslmode=require",
+    url: process.env.DATABASE_URL,
   },
-  
-  // Указываем стандартный драйвер для PostgreSQL
-  driver: "pg", // Важно: используйте "pg", а не "custom"
-  
-  // Для SSL (только если нужно отключить проверку сертификата)
-  ssl: process.env.NODE_ENV === "production" 
-    ? { rejectUnauthorized: false }
-    : false
 });
