@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: flipflop-print
+    runtime: node
+    rootDir: .
+    buildCommand: |
+      npm install
+      npm run build
+      npm run db:push
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: flipflop-db
+          property: connectionString
+    
+databases:
+  - name: flipflop-db
+    databaseName: flipflop_print
+    user: flipflop_user
