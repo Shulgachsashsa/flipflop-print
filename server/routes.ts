@@ -5,21 +5,14 @@ import { insertCategorySchema, insertSubcategorySchema, insertProductSchema, ins
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Categories
-
   app.get("/api/categories", async (req, res) => {
-  try {
-    const result = await db.select().from(schema.categories);
-    console.log("Результат запроса:", result); // Важно для логов
-    res.json(result.length > 0 ? result : { message: "Нет данных" });
-  } catch (error) {
-    console.error("Полная ошибка:", {
-      message: error.message,
-      stack: error.stack,
-      query: error.query // Для Drizzle
-    });
-    res.status(500).json({ error: "Ошибка БД" });
-  }
-});
+    try {
+      const categories = await storage.getCategories();
+      res.json(categories);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch categories" });
+    }
+  });
 
   app.get("/api/categories/:id", async (req, res) => {
     try {
