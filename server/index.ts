@@ -2,6 +2,19 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+// Добавьте в index.ts
+async function testConnection() {
+  try {
+    const client = await pool.connect();
+    const res = await client.query('SELECT 1');
+    client.release();
+    console.log('✅ Database connection test successful');
+  } catch (err) {
+    console.error('❌ Database connection failed:', err);
+  }
+}
+testConnection();
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
