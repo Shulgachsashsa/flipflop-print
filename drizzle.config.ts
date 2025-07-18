@@ -7,6 +7,6 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL + "?sslmode=require"
   },
-  driver: "pg",
-  ssl: true
+  // Явно указываем драйвер для PostgreSQL
+  driver: "pg"
 });
